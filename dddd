@@ -1,0 +1,26 @@
+[33mcommit 141724278ecaf4242892220c96640f718f383eb3[m[33m ([m[1;31morigin/develop[m[33m)[m
+Merge: 3aa8b57 ed313f5
+Author: Умар Висаитов <100874991+UmarVis@users.noreply.github.com>
+Date:   Mon Dec 5 20:18:58 2022 +0300
+
+    Merge pull request #1 from UmarVis/controllers-films-users
+    
+    TZ 9
+
+[33mcommit ed313f583b516ff23dc4ea7623a9bbe396843235[m[33m ([m[1;36mHEAD -> [m[1;32mcontrollers-films-users[m[33m, [m[1;31morigin/controllers-films-users[m[33m)[m
+Author: UmarVis <umar_9292@mail.ru>
+Date:   Mon Dec 5 20:13:39 2022 +0300
+
+    TZ 9 after 1 rew
+
+[33mcommit 4b28757b6c8df8c821aec940d13d51fc1ea30bad[m
+Author: UmarVis <umar_9292@mail.ru>
+Date:   Sun Dec 4 13:58:25 2022 +0300
+
+    TZ 9
+
+[33mcommit 3aa8b57dda2efac245c8aa1aca245d645cd20e42[m[33m ([m[1;31morigin/main[m[33m, [m[1;31morigin/HEAD[m[33m, [m[1;32mmain[m[33m)[m
+Author: Умар Висаитов <100874991+UmarVis@users.noreply.github.com>
+Date:   Sun Dec 4 13:10:45 2022 +0300
+
+    Initial commit
