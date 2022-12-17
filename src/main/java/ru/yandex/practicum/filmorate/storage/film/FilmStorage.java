@@ -11,6 +11,6 @@ public interface FilmStorage {
 
     Film updateFilm(Film film);
 
-    Film getFilmById(Integer id);
+    Film findById(Integer id);
 
 }

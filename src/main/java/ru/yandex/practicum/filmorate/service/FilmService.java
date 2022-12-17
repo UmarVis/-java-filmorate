@@ -1,6 +1,5 @@
 package ru.yandex.practicum.filmorate.service;
 
-import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -13,10 +12,9 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
-@Getter
 @Slf4j
 public class FilmService {
-    FilmStorage filmStorage;
+    private final FilmStorage filmStorage;
 
     @Autowired
     public FilmService(FilmStorage filmStorage) {
@@ -28,7 +26,7 @@ public class FilmService {
             log.error("Film with id: {} or user with id: {} not found", filmId, userId);
             throw new FilmIdException("Film with id: " + filmId + " or user with id: " + userId + " not found");
         }
-        filmStorage.getFilmById(filmId).getLikeId().add(userId);
+        filmStorage.findById(filmId).getLikeId().add(userId);
     }
 
     public void removeLike(Integer filmId, Integer userId) {
@@ -36,7 +34,7 @@ public class FilmService {
             log.error("Film with id: {} or user with id: {} not found", filmId, userId);
             throw new UserIdException("Film with id: " + filmId + " or user with id: " + userId + " not found");
         }
-        filmStorage.getFilmById(filmId).getLikeId().remove(userId);
+        filmStorage.findById(filmId).getLikeId().remove(userId);
     }
 
     public List<Film> getPopularFilms(Integer count) {

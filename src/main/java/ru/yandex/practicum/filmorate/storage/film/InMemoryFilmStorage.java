@@ -5,10 +5,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import org.springframework.web.server.ResponseStatusException;
 import ru.yandex.practicum.filmorate.exception.FilmIdException;
-import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
 
-import java.time.LocalDate;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -36,7 +34,6 @@ public class InMemoryFilmStorage implements FilmStorage {
     @Override
     public Film create(Film film) {
         idGenerate();
-        validate(film);
         film.setId(id);
         film.setLikeId(new HashSet<>());
         filmMap.put(id, film);
@@ -46,7 +43,6 @@ public class InMemoryFilmStorage implements FilmStorage {
 
     @Override
     public Film updateFilm(Film film) {
-        validate(film);
         if (filmMap.containsKey(film.getId())) {
             filmMap.remove(film.getId());
             film.setLikeId(new HashSet<>());
@@ -59,26 +55,11 @@ public class InMemoryFilmStorage implements FilmStorage {
     }
 
     @Override
-    public Film getFilmById(Integer id) {
+    public Film findById(Integer id) {
         if (!filmMap.containsKey(id)) {
             log.error("Film with id: {} not found", id);
             throw new FilmIdException("Film with id: " + id + " not found");
         }
         return filmMap.get(id);
-    }
-
-    private void validate(Film film) {
-        if (film.getName().isBlank()) {
-            throw new ValidationException("Название не может быть пустым");
-        }
-        if (film.getDescription().length() > 200) {
-            throw new ValidationException("Максимальная длина описания — 200 символов");
-        }
-        if (film.getReleaseDate().isBefore(LocalDate.of(1895, 12, 28))) {
-            throw new ValidationException("Дата релиза не может быть раньше 28 декабря 1895 года");
-        }
-        if (film.getDuration() < 0) {
-            throw new ValidationException("Продолжительность фильма должна быть положительной");
-        }
     }
 }
