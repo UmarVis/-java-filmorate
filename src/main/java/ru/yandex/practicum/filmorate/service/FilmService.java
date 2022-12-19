@@ -3,6 +3,7 @@ package ru.yandex.practicum.filmorate.service;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import ru.yandex.practicum.filmorate.exception.ConstraintViolationException;
 import ru.yandex.practicum.filmorate.exception.FilmIdException;
 import ru.yandex.practicum.filmorate.exception.UserIdException;
 import ru.yandex.practicum.filmorate.model.Film;
@@ -37,12 +38,32 @@ public class FilmService {
         filmStorage.findById(filmId).getLikeId().remove(userId);
     }
 
-    public List<Film> getPopularFilms(Integer count) {
-        return filmStorage.getFilms().stream()
+    public List<Film> getPopularFilms(Integer count) throws ConstraintViolationException {
+        if (count < 0) {
+            log.error("Count {} is not positive", count);
+            throw new ConstraintViolationException("Count is not positive: " + count);
+        }
+        return filmStorage.get().stream()
                 .sorted((o1, o2) -> o2.getLikeId().size() - o1.getLikeId().size())
                 .limit(count)
                 .collect(Collectors.toList());
 
+    }
+
+    public List<Film> get() {
+        return filmStorage.get();
+    }
+
+    public Film findById(int filmId) {
+        return filmStorage.findById(filmId);
+    }
+
+    public Film create(Film film) {
+        return filmStorage.create(film);
+    }
+
+    public Film update(Film film) {
+        return filmStorage.updateFilm(film);
     }
 }
 

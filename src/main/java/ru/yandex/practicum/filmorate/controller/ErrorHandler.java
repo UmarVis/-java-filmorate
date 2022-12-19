@@ -10,6 +10,8 @@ import ru.yandex.practicum.filmorate.exception.UserIdException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.ErrorResponse;
 
+import javax.validation.ConstraintViolationException;
+
 @RestControllerAdvice
 @Slf4j
 public class ErrorHandler {
@@ -32,5 +34,21 @@ public class ErrorHandler {
     public ErrorResponse handleNotValidData(final ValidationException e) {
         log.error("Validation error");
         return new ErrorResponse(e.getMessage());
+    }
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorResponse handlerNotPositiveCount(ConstraintViolationException e) {
+        log.error("Not positive count");
+        return new ErrorResponse(e.getMessage());
+    }
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    public ErrorResponse handleThrowable(final Throwable e) {
+        log.error("Произошла непредвиденная ошибка.");
+        return new ErrorResponse(
+                "Произошла непредвиденная ошибка."
+        );
     }
 }

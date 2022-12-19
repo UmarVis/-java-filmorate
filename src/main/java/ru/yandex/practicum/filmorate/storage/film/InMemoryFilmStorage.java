@@ -7,10 +7,7 @@ import org.springframework.web.server.ResponseStatusException;
 import ru.yandex.practicum.filmorate.exception.FilmIdException;
 import ru.yandex.practicum.filmorate.model.Film;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
+import java.util.*;
 
 @Component
 @Slf4j
@@ -26,9 +23,10 @@ public class InMemoryFilmStorage implements FilmStorage {
     }
 
     @Override
-    public Collection<Film> getFilms() {
+    public List<Film> get() {
         log.info("All films {}", filmMap.toString());
-        return filmMap.values();
+        List<Film> allFilms = new ArrayList<>(filmMap.values());
+        return allFilms;
     }
 
     @Override
@@ -44,7 +42,6 @@ public class InMemoryFilmStorage implements FilmStorage {
     @Override
     public Film updateFilm(Film film) {
         if (filmMap.containsKey(film.getId())) {
-            filmMap.remove(film.getId());
             film.setLikeId(new HashSet<>());
             filmMap.put(film.getId(), film);
             log.info("Film was update {}", film.toString());

@@ -22,9 +22,10 @@ public class InMemoryUserStorage implements UserStorage {
         id++;
     }
 
-    public Collection<User> getUsers() {
+    public List<User> get() {
         log.info("All users {}", usersMap.toString());
-        return usersMap.values();
+        List<User> users = new ArrayList<>(usersMap.values());
+        return users;
     }
 
     public User create(User user) {
@@ -41,7 +42,6 @@ public class InMemoryUserStorage implements UserStorage {
 
     public User update(User user) {
         if (usersMap.containsKey(user.getId())) {
-            usersMap.remove(user.getId());
             user.setFriendsId(new HashSet<>());
             usersMap.put(user.getId(), user);
             log.info("Пользователь {} обновлен.", user.toString());
@@ -59,7 +59,7 @@ public class InMemoryUserStorage implements UserStorage {
             return user.get();
         } else {
             log.error("Id not found {} ", id);
-            return user.orElseThrow(() -> new UserIdException("User with id: " + id + " not found"));
+            throw new UserIdException("User with id: " + id + " not found");
         }
     }
 }

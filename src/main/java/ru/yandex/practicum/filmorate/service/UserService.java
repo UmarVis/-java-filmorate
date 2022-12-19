@@ -7,7 +7,6 @@ import ru.yandex.practicum.filmorate.exception.UserIdException;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -47,11 +46,8 @@ public class UserService {
             log.error("Invalid user ID: ", userId);
             throw new UserIdException("User id " + userId + " not found");
         }
-        List<User> friendsList = new ArrayList<>();
-        for (Integer users : userStorage.findById(userId).getFriendsId()) {
-            friendsList.add(userStorage.findById(users));
-        }
-        return friendsList;
+        return userStorage.findById(userId).getFriendsId()
+                .stream().map(userStorage::findById).collect(Collectors.toList());
     }
 
     public List<User> getMutualFriends(Integer userId, Integer otherId) {
@@ -59,13 +55,23 @@ public class UserService {
         setMutualFriends.retainAll(userStorage.findById(userId).getFriendsId());
         return setMutualFriends
                 .stream()
-                .map(id -> {
-                    try {
-                        return userStorage.findById(id);
-                    } catch (UserIdException e) {
-                        throw new RuntimeException(e);
-                    }
-                })
+                .map(id -> userStorage.findById(id))
                 .collect(Collectors.toList());
+    }
+
+    public List<User> get() {
+        return userStorage.get();
+    }
+
+    public User findById(int userId) {
+        return userStorage.findById(userId);
+    }
+
+    public User create(User user) {
+        return userStorage.create(user);
+    }
+
+    public User update(User user) {
+        return userStorage.update(user);
     }
 }

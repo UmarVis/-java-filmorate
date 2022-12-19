@@ -6,11 +6,11 @@ import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.service.UserService;
-import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
 import javax.validation.Valid;
 import java.time.LocalDate;
 import java.util.Collection;
+import java.util.List;
 
 @Slf4j
 @RestController
@@ -18,22 +18,20 @@ import java.util.Collection;
 public class UserController {
 
     private final UserService userService;
-    private final UserStorage userStorage;
 
     @Autowired
-    public UserController(UserService userService, UserStorage userStorage) {
+    public UserController(UserService userService) {
         this.userService = userService;
-        this.userStorage = userStorage;
     }
 
     @GetMapping
-    public Collection<User> getUsers() {
-        return userStorage.getUsers();
+    public List<User> get() {
+        return userService.get();
     }
 
     @GetMapping("/{userId}")
     public User findById(@PathVariable int userId) {
-        return userStorage.findById(userId);
+        return userService.findById(userId);
     }
 
     @GetMapping("{id}/friends")
@@ -54,13 +52,13 @@ public class UserController {
     @PostMapping
     public User create(@Valid @RequestBody User user) {
         validate(user);
-        return userStorage.create(user);
+        return userService.create(user);
     }
 
     @PutMapping
     public User update(@Valid @RequestBody User user) {
         validate(user);
-        return userStorage.update(user);
+        return userService.update(user);
     }
 
     @DeleteMapping("{id}/friends/{friendId}")
