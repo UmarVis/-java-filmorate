@@ -19,6 +19,8 @@ import java.util.List;
 @RequestMapping("/films")
 public class FilmController {
 
+    private static final LocalDate RELEASE_DATE = LocalDate.of(1895, 12, 28);
+
     private final FilmService filmService;
 
     @Autowired
@@ -38,18 +40,18 @@ public class FilmController {
 
     @GetMapping("/popular")
     public Collection<Film> getPopular(@RequestParam(value = "count", defaultValue = "10")
-                                       @Positive int count) throws ConstraintViolationException {
+                                       @Positive int count) {
         return filmService.getPopularFilms(count);
     }
 
     @PostMapping
-    public Film create(@Valid @RequestBody Film film) {
+    public Film create(@RequestBody @Valid Film film) {
         validate(film);
         return filmService.create(film);
     }
 
     @PutMapping
-    public Film update(@Valid @RequestBody Film film) {
+    public Film update(@RequestBody @Valid Film film) {
         validate(film);
         return filmService.update(film);
     }
@@ -65,17 +67,8 @@ public class FilmController {
     }
 
     private void validate(Film film) {
-        if (film.getName().isBlank()) {
-            throw new ValidationException("Название не может быть пустым");
-        }
-        if (film.getDescription().length() > 200) {
-            throw new ValidationException("Максимальная длина описания — 200 символов");
-        }
-        if (film.getReleaseDate().isBefore(LocalDate.of(1895, 12, 28))) {
+        if (film.getReleaseDate().isBefore(RELEASE_DATE)) {
             throw new ValidationException("Дата релиза не может быть раньше 28 декабря 1895 года");
-        }
-        if (film.getDuration() < 0) {
-            throw new ValidationException("Продолжительность фильма должна быть положительной");
         }
     }
 }

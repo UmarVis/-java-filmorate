@@ -68,10 +68,18 @@ public class UserService {
     }
 
     public User create(User user) {
+        setNameIfLoginEmpty(user);
         return userStorage.create(user);
     }
 
     public User update(User user) {
+        setNameIfLoginEmpty(user);
         return userStorage.update(user);
+    }
+
+    private void setNameIfLoginEmpty(User user) {
+        if (user.getName() == null || user.getName().isBlank()) {
+            user.setName(user.getLogin());
+        }
     }
 }

@@ -16,7 +16,7 @@ public class User {
     @NotBlank
     private String email;
     @Pattern(regexp = "[a-zA-Z0-9]{4,12}$",
-            message = "username must be of 6 to 12 length with no special characters")
+            message = "username must be of 4 to 12 length with no special characters")
     private String login;
     private String name;
 

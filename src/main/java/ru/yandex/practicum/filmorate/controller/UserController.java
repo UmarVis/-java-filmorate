@@ -50,34 +50,17 @@ public class UserController {
     }
 
     @PostMapping
-    public User create(@Valid @RequestBody User user) {
-        validate(user);
+    public User create(@RequestBody @Valid User user) {
         return userService.create(user);
     }
 
     @PutMapping
-    public User update(@Valid @RequestBody User user) {
-        validate(user);
+    public User update(@RequestBody @Valid User user) {
         return userService.update(user);
     }
 
     @DeleteMapping("{id}/friends/{friendId}")
     public void removeFriend(@PathVariable int id, @PathVariable int friendId) {
         userService.deleteFriend(id, friendId);
-    }
-
-    public void validate(User user) {
-        if (user.getEmail().isBlank() || !user.getEmail().contains("@")) {
-            log.info("Отсутствует электронная почта {}", user.toString());
-            throw new ValidationException("Электронная почта не может быть пустой или должна содержать символ @");
-        }
-        if (user.getLogin().isBlank() || user.getLogin().contains(" ")) {
-            log.info("Отсутствует логин {}", user.toString());
-            throw new ValidationException("Логин не может быть пустым и содержать пробелы");
-        }
-        if (user.getBirthday().isAfter(LocalDate.now())) {
-            log.info("Введена не корректная дата рождения {}", user.toString());
-            throw new ValidationException("Дата рождения не может быть в будущем");
-        }
     }
 }
