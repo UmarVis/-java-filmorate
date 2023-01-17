@@ -2,12 +2,15 @@ package ru.yandex.practicum.filmorate.service;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.ConstraintViolationException;
 import ru.yandex.practicum.filmorate.exception.FilmIdException;
 import ru.yandex.practicum.filmorate.exception.UserIdException;
 import ru.yandex.practicum.filmorate.model.Film;
-import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
+import ru.yandex.practicum.filmorate.storage.film.dao.FilmStorage;
+import ru.yandex.practicum.filmorate.storage.film.dao.LikesDao;
+import ru.yandex.practicum.filmorate.storage.film.daoImpl.FilmStorageDaoImpl;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -16,10 +19,11 @@ import java.util.stream.Collectors;
 @Slf4j
 public class FilmService {
     private final FilmStorage filmStorage;
+    private final LikesDao likesDao;
 
-    @Autowired
-    public FilmService(FilmStorage filmStorage) {
+    public FilmService(@Qualifier("FilmStorageDaoImpl") FilmStorage filmStorage, LikesDao likesDao) {
         this.filmStorage = filmStorage;
+        this.likesDao = likesDao;
     }
 
     public void addLike(Integer filmId, Integer userId) {
@@ -27,7 +31,7 @@ public class FilmService {
             log.error("Film with id: {} or user with id: {} not found", filmId, userId);
             throw new FilmIdException("Film with id: " + filmId + " or user with id: " + userId + " not found");
         }
-        filmStorage.findById(filmId).getLikeId().add(userId);
+        likesDao.addLike(filmId, userId);
     }
 
     public void removeLike(Integer filmId, Integer userId) {
@@ -35,7 +39,7 @@ public class FilmService {
             log.error("Film with id: {} or user with id: {} not found", filmId, userId);
             throw new UserIdException("Film with id: " + filmId + " or user with id: " + userId + " not found");
         }
-        filmStorage.findById(filmId).getLikeId().remove(userId);
+        likesDao.removeLike(filmId, userId);
     }
 
     public List<Film> getPopularFilms(Integer count) throws ConstraintViolationException {
@@ -43,7 +47,7 @@ public class FilmService {
             log.error("Count {} is not positive", count);
             throw new ConstraintViolationException("Count is not positive: " + count);
         }
-        return filmStorage.get().stream()
+        return filmStorage.getAll().stream()
                 .sorted((o1, o2) -> o2.getLikeId().size() - o1.getLikeId().size())
                 .limit(count)
                 .collect(Collectors.toList());
@@ -51,11 +55,11 @@ public class FilmService {
     }
 
     public List<Film> get() {
-        return filmStorage.get();
+        return filmStorage.getAll();
     }
 
     public Film findById(int filmId) {
-        return filmStorage.findById(filmId);
+        return filmStorage.getById(filmId);
     }
 
     public Film create(Film film) {

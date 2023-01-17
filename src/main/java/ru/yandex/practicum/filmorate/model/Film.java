@@ -14,6 +14,7 @@ import java.util.Set;
 @AllArgsConstructor
 public class Film {
 
+    @Min(1)
     private Integer id;
     @NotBlank
     private String name;
@@ -24,5 +25,8 @@ public class Film {
     private LocalDate releaseDate;
     @Min(1)
     private int duration;
+    private int rate;
     private Set<Integer> likeId;
+    private Set<Genre> genres;
+    private Mpa mpa;
 }

@@ -6,6 +6,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.server.ResponseStatusException;
 import ru.yandex.practicum.filmorate.exception.FilmIdException;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.storage.film.dao.FilmStorage;
 
 import java.util.*;
 
@@ -23,7 +24,7 @@ public class InMemoryFilmStorage implements FilmStorage {
     }
 
     @Override
-    public List<Film> get() {
+    public List<Film> getAll() {
         log.info("All films {}", filmMap.toString());
         List<Film> allFilms = new ArrayList<>(filmMap.values());
         return allFilms;
@@ -51,12 +52,26 @@ public class InMemoryFilmStorage implements FilmStorage {
         return film;
     }
 
-    @Override
-    public Film findById(Integer id) {
+    public Film getById(Integer id) {
         if (!filmMap.containsKey(id)) {
             log.error("Film with id: {} not found", id);
             throw new FilmIdException("Film with id: " + id + " not found");
         }
         return filmMap.get(id);
+    }
+
+    @Override
+    public void deleteById(Integer id) {
+        if (filmMap.containsKey(id)) {
+            filmMap.remove(id);
+        } else {
+            log.error("Film with id {} not found", id);
+            throw new FilmIdException("Film with id " + id + " not found");
+        }
+    }
+
+    @Override
+    public void deleteAll() {
+        filmMap.clear();
     }
 }

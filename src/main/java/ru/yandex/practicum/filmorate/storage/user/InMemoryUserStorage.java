@@ -6,11 +6,12 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.server.ResponseStatusException;
 import ru.yandex.practicum.filmorate.exception.UserIdException;
 import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.storage.user.dao.UserStorage;
 
 import java.util.*;
 
 @Slf4j
-@Component
+@Component("InMemoryUserStorage")
 public class InMemoryUserStorage implements UserStorage {
     private Map<Integer, User> usersMap = new HashMap<>();
     private Integer id = 0;
@@ -58,5 +59,22 @@ public class InMemoryUserStorage implements UserStorage {
             log.error("Id not found {} ", id);
             throw new UserIdException("User with id: " + id + " not found");
         }
+    }
+
+    @Override
+    public void deleteUserById(int id) {
+        if (usersMap.containsKey(id)) {
+            usersMap.remove(id);
+            log.info("User with id {} was removed", id);
+        } else {
+            log.error("Id {} not found", id);
+            throw new UserIdException("Id not found");
+        }
+    }
+
+    @Override
+    public void deleteAllUsers() {
+        usersMap.clear();
+        log.info("All users was deleted {}", usersMap.toString());
     }
 }

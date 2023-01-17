@@ -2,11 +2,15 @@ package ru.yandex.practicum.filmorate.service;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.UserIdException;
 import ru.yandex.practicum.filmorate.model.User;
-import ru.yandex.practicum.filmorate.storage.user.UserStorage;
+import ru.yandex.practicum.filmorate.storage.user.dao.FriendsDao;
+import ru.yandex.practicum.filmorate.storage.user.dao.UserStorage;
+import ru.yandex.practicum.filmorate.storage.user.daoImpl.UserStorageImpl;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -16,10 +20,11 @@ import java.util.stream.Collectors;
 @Slf4j
 public class UserService {
     private final UserStorage userStorage;
+    private final FriendsDao friendsDao;
 
-    @Autowired
-    public UserService(UserStorage userStorage) {
+    public UserService(@Qualifier("UserStorageImpl") UserStorage userStorage, FriendsDao friendsDao) {
         this.userStorage = userStorage;
+        this.friendsDao = friendsDao;
     }
 
     public void addFriend(Integer userId, Integer friendId) {
@@ -27,9 +32,7 @@ public class UserService {
             log.debug("Check user id {} check friend id {}", userId, friendId);
             throw new UserIdException("User with id: " + userId + " or user friend with id: " + friendId + " not found");
         }
-        userStorage.findById(userId).getFriendsId().add(friendId);
-        userStorage.findById(friendId).getFriendsId().add(userId);
-
+        friendsDao.addFriend(userId, friendId);
     }
 
     public void deleteFriend(Integer userId, Integer friendId) {
@@ -37,8 +40,7 @@ public class UserService {
             log.debug("Check user id {} check friend id {}", userId, friendId);
             throw new UserIdException("User with id: " + userId + " or user friend with id: " + friendId + " not found");
         }
-        userStorage.findById(userId).getFriendsId().remove(friendId);
-        userStorage.findById(friendId).getFriendsId().remove(userId);
+        friendsDao.deleteFriend(userId, friendId);
     }
 
     public List<User> getAllFriends(Integer userId) {
@@ -46,8 +48,11 @@ public class UserService {
             log.error("Invalid user ID: ", userId);
             throw new UserIdException("User id " + userId + " not found");
         }
-        return userStorage.findById(userId).getFriendsId()
-                .stream().map(userStorage::findById).collect(Collectors.toList());
+        List<User> allFriendsList = new ArrayList<>();
+        for (Integer friendId : friendsDao.getAllFriends(userId)) {
+            allFriendsList.add(userStorage.findById(friendId));
+        }
+        return allFriendsList;
     }
 
     public List<User> getMutualFriends(Integer userId, Integer otherId) {
