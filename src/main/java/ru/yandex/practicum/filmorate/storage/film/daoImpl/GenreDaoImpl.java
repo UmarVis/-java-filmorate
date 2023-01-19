@@ -1,23 +1,23 @@
 package ru.yandex.practicum.filmorate.storage.film.daoImpl;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
-import ru.yandex.practicum.filmorate.exception.IdNotFoundExp;
+import ru.yandex.practicum.filmorate.exception.IdNotFoundException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.storage.film.dao.GenreDao;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
 @Component
 public class GenreDaoImpl implements GenreDao {
-    JdbcTemplate jdbcTemplate;
+    private final JdbcTemplate jdbcTemplate;
 
     @Autowired
     public GenreDaoImpl(JdbcTemplate jdbcTemplate) {
@@ -25,23 +25,19 @@ public class GenreDaoImpl implements GenreDao {
     }
 
     @Override
-    public Collection<Genre> getAll() {
+    public List<Genre> getAll() {
         String sql = "select * from GENRES";
         return jdbcTemplate.query(sql, this::rowMapper);
     }
 
     @Override
     public Genre getId(int id) {
-        if (idCheck(id) == 0) {
-            throw new IdNotFoundExp("Genre ID " + id + " not found");
-        }
         String sql = "select * from GENRES where GENRE_ID = ?";
-        return jdbcTemplate.queryForObject(sql, this::rowMapper, id);
-    }
-
-    private Genre rowMapper(ResultSet resultSet, int i) throws SQLException {
-        return new Genre(resultSet.getInt("GENRE_ID"),
-                resultSet.getString("GENRE_NAME"));
+        try {
+            return jdbcTemplate.queryForObject(sql, this::rowMapper, id);
+        } catch (DataAccessException e) {
+            throw new IdNotFoundException("Genre ID " + id + " not found");
+        }
     }
 
     @Override
@@ -70,9 +66,8 @@ public class GenreDaoImpl implements GenreDao {
         addGenresToFilm(film);
     }
 
-    private int idCheck(int id) {
-        String sql = "select count(*) from GENRES where GENRE_ID = ?";
-        int response = jdbcTemplate.queryForObject(sql, Integer.class, id);
-        return response;
+    private Genre rowMapper(ResultSet resultSet, int i) throws SQLException {
+        return new Genre(resultSet.getInt("GENRE_ID"),
+                resultSet.getString("GENRE_NAME"));
     }
 }

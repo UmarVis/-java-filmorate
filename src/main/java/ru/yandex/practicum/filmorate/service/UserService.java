@@ -1,20 +1,13 @@
 package ru.yandex.practicum.filmorate.service;
 
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.UserIdException;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.user.dao.FriendsDao;
 import ru.yandex.practicum.filmorate.storage.user.dao.UserStorage;
-import ru.yandex.practicum.filmorate.storage.user.daoImpl.UserStorageImpl;
 
-import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -22,7 +15,7 @@ public class UserService {
     private final UserStorage userStorage;
     private final FriendsDao friendsDao;
 
-    public UserService(@Qualifier("UserStorageImpl") UserStorage userStorage, FriendsDao friendsDao) {
+    public UserService(UserStorage userStorage, FriendsDao friendsDao) {
         this.userStorage = userStorage;
         this.friendsDao = friendsDao;
     }
@@ -48,20 +41,11 @@ public class UserService {
             log.error("Invalid user ID: ", userId);
             throw new UserIdException("User id " + userId + " not found");
         }
-        List<User> allFriendsList = new ArrayList<>();
-        for (Integer friendId : friendsDao.getAllFriends(userId)) {
-            allFriendsList.add(userStorage.findById(friendId));
-        }
-        return allFriendsList;
+        return userStorage.getAllFriends(userId);
     }
 
     public List<User> getMutualFriends(Integer userId, Integer otherId) {
-        Set<Integer> setMutualFriends = new HashSet<>(userStorage.findById(otherId).getFriendsId());
-        setMutualFriends.retainAll(userStorage.findById(userId).getFriendsId());
-        return setMutualFriends
-                .stream()
-                .map(id -> userStorage.findById(id))
-                .collect(Collectors.toList());
+        return userStorage.getMutualFriends(userId, otherId);
     }
 
     public List<User> get() {

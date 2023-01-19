@@ -1,6 +1,5 @@
 package ru.yandex.practicum.filmorate.storage.user.dao;
 
-import ru.yandex.practicum.filmorate.exception.UserIdException;
 import ru.yandex.practicum.filmorate.model.User;
 
 import java.util.List;
@@ -17,4 +16,8 @@ public interface UserStorage {
     void deleteUserById(int id);
 
     void deleteAllUsers();
+
+    List<User> getMutualFriends(Integer userId, Integer otherId);
+
+    List<User> getAllFriends(Integer userId);
 }

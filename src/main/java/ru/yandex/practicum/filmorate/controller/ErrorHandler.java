@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import ru.yandex.practicum.filmorate.exception.FilmIdException;
-import ru.yandex.practicum.filmorate.exception.IdNotFoundExp;
+import ru.yandex.practicum.filmorate.exception.IdNotFoundException;
 import ru.yandex.practicum.filmorate.exception.UserIdException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.ErrorResponse;
@@ -40,7 +40,7 @@ public class ErrorHandler {
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.NOT_FOUND)
-    public ErrorResponse handlerNotPositiveCount(final IdNotFoundExp e) {
+    public ErrorResponse handlerNotPositiveCount(final IdNotFoundException e) {
         log.error("invalid ID: {}", e.getMessage());
         return new ErrorResponse(e.getMessage());
     }

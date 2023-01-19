@@ -4,7 +4,7 @@ import ru.yandex.practicum.filmorate.model.Film;
 
 import java.util.List;
 
-public interface FilmStorage {
+public interface FilmDao {
     List<Film> getAll();
 
     Film create(Film film);
@@ -14,6 +14,9 @@ public interface FilmStorage {
     Film getById(Integer id);
 
     void deleteById(Integer id);
+
     void deleteAll();
+
+    List<Film> findPopularFilms(Integer count);
 
 }
