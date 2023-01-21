@@ -10,16 +10,13 @@ import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.exception.IdNotFoundException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Genre;
+import ru.yandex.practicum.filmorate.model.Mpa;
 import ru.yandex.practicum.filmorate.storage.film.dao.FilmDao;
-import ru.yandex.practicum.filmorate.storage.film.dao.GenreDao;
-import ru.yandex.practicum.filmorate.storage.film.dao.LikesDao;
-import ru.yandex.practicum.filmorate.storage.film.dao.MpaDao;
 
 import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 
@@ -28,16 +25,10 @@ import java.util.List;
 @Component("FilmStorageDaoImpl")
 public class FilmStorageDaoImpl implements FilmDao {
     private final JdbcTemplate jdbc;
-    private final MpaDao mpaDao;
-    private final LikesDao likesDao;
-    private final GenreDao genreDao;
 
     @Autowired
-    public FilmStorageDaoImpl(JdbcTemplate jdbc, MpaDao mpaDao, LikesDao likesDao, GenreDao genreDao) {
+    public FilmStorageDaoImpl(JdbcTemplate jdbc) {
         this.jdbc = jdbc;
-        this.mpaDao = mpaDao;
-        this.likesDao = likesDao;
-        this.genreDao = genreDao;
     }
 
     @Override
@@ -66,9 +57,6 @@ public class FilmStorageDaoImpl implements FilmDao {
             return stmt;
         }, keyHolder);
         film.setId(keyHolder.getKey().intValue());
-        if (film.getGenres() != null) {
-            genreDao.addGenresToFilm(film);
-        }
         return film;
     }
 
@@ -76,9 +64,6 @@ public class FilmStorageDaoImpl implements FilmDao {
     public Film updateFilm(Film film) {
         if (idCheck(film.getId()) == 0) {
             throw new IdNotFoundException("Film with ID " + film.getId() + " not found");
-        }
-        if (film.getGenres() != null) {
-            genreDao.updateGenresOfFilm(film);
         }
         String sqlQuery = "update FILMS set FILM_NAME = ?, FILM_DESCRIPTION = ?, FILM_RELEASE_DATE = ?, " +
                 "FILM_DURATION = ?, MPA_ID = ? where FILM_ID = ?";
@@ -133,9 +118,9 @@ public class FilmStorageDaoImpl implements FilmDao {
                 resultSet.getDate("FILM_RELEASE_DATE").toLocalDate(),
                 resultSet.getInt("FILM_DURATION"),
                 resultSet.getInt("FILM_RATE"),
-                new HashSet<Integer>(likesDao.get(resultSet.getInt("FILM_ID"))),
-                new LinkedHashSet<Genre>(genreDao.getFilmGenres(resultSet.getInt("FILM_ID"))),
-                mpaDao.getId(resultSet.getInt("MPA_ID"))
+                new LinkedHashSet<Genre>(),
+                new Mpa(resultSet.getInt("mpa_id"),
+                        resultSet.getString("mpa_name"))
         );
     }
 

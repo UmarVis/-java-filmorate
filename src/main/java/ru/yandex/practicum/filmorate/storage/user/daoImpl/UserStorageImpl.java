@@ -13,7 +13,6 @@ import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.HashSet;
 import java.util.List;
 
 @Component("UserStorageImpl")
@@ -110,8 +109,7 @@ public class UserStorageImpl implements UserStorage {
                 resultSet.getString("USER_EMAIL"),
                 resultSet.getString("USER_LOGIN"),
                 resultSet.getString("USER_NAME"),
-                resultSet.getDate("USER_BIRTHDAY").toLocalDate(),
-                new HashSet<>(fD.getAllFriends(resultSet.getInt("USER_ID")))
+                resultSet.getDate("USER_BIRTHDAY").toLocalDate()
         );
     }
 

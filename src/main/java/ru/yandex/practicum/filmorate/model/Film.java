@@ -1,6 +1,7 @@
 package ru.yandex.practicum.filmorate.model;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 
 import javax.validation.constraints.Min;
@@ -27,7 +28,7 @@ public class Film {
     @Min(1)
     private int duration;
     private int rate;
-    private Set<Integer> likeId;
+
     private LinkedHashSet<Genre> genres;
     @NotNull
     private Mpa mpa;

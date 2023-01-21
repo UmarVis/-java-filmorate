@@ -36,9 +36,9 @@ class FilmorateApplicationTests {
     private final GenreDao genreDao;
 
     private final User user = new User(1, "mail@mail.ru", "admin", "Djam",
-            LocalDate.of(2020, 1, 1), new HashSet<>());
+            LocalDate.of(2020, 1, 1));
     private final Film film = new Film(1, "NameFilm", "DescrFilm", LocalDate.of(2020, 1, 1),
-            60,5, new HashSet<>(), new LinkedHashSet<>(), new Mpa(1,"G"));
+            60,5, new LinkedHashSet<>(), new Mpa(1,"G"));
 
 
     @Test
@@ -61,12 +61,12 @@ class FilmorateApplicationTests {
         assertThrows(IdNotFoundException.class, ()-> userStorage.deleteUserById(44));
 
         User friend = new User(1, "friend@mail.ru", "friend", "Dgigi",
-                LocalDate.of(2000, 1, 1), new HashSet<>());
+                LocalDate.of(2000, 1, 1));
         userStorage.create(friend);
         friendsDao.addFriend(2,3);
 //        Assertions.assertTrue(userStorage.findById(2).getFriendsId().contains(friendsDao.getAllFriends(2).get(0)));
         friendsDao.deleteFriend(2,3);
-        assertEquals(0, userStorage.findById(2).getFriendsId().size());
+//        assertEquals(0, userStorage.findById(2).getFriendsId().size());
 
         assertThrows(UserIdException.class, ()-> friendsDao.addFriend(2,33));
         assertThrows(UserIdException.class, ()-> friendsDao.deleteFriend(2,33));
