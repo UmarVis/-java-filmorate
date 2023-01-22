@@ -41,11 +41,11 @@ public class UserService {
             log.error("Invalid user ID: ", userId);
             throw new UserIdException("User id " + userId + " not found");
         }
-        return userStorage.getAllFriends(userId);
+        return friendsDao.getAllFriends(userId);
     }
 
     public List<User> getMutualFriends(Integer userId, Integer otherId) {
-        return userStorage.getMutualFriends(userId, otherId);
+        return friendsDao.getMutualFriends(userId, otherId);
     }
 
     public List<User> get() {

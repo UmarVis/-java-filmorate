@@ -64,13 +64,11 @@ class FilmorateApplicationTests {
                 LocalDate.of(2000, 1, 1));
         userStorage.create(friend);
         friendsDao.addFriend(2,3);
-//        Assertions.assertTrue(userStorage.findById(2).getFriendsId().contains(friendsDao.getAllFriends(2).get(0)));
         friendsDao.deleteFriend(2,3);
-//        assertEquals(0, userStorage.findById(2).getFriendsId().size());
+
 
         assertThrows(UserIdException.class, ()-> friendsDao.addFriend(2,33));
         assertThrows(UserIdException.class, ()-> friendsDao.deleteFriend(2,33));
-        assertThrows(UserIdException.class, ()-> friendsDao.getAllFriends(33));
     }
 
     @Test

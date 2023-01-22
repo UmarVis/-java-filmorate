@@ -18,18 +18,16 @@ import java.util.List;
 @Component("UserStorageImpl")
 public class UserStorageImpl implements UserStorage {
     private final JdbcTemplate jdbc;
-    private final FriendsDaoImpl fD;
 
     @Autowired
-    public UserStorageImpl(JdbcTemplate jdbc, FriendsDaoImpl fD) {
+    public UserStorageImpl(JdbcTemplate jdbc) {
         this.jdbc = jdbc;
-        this.fD = fD;
     }
 
     @Override
     public List<User> get() {
         String sqlQuery = "select * from USERS";
-        return jdbc.query(sqlQuery, this::RowMapper);
+        return jdbc.query(sqlQuery, this::rowMapper);
     }
 
     @Override
@@ -65,7 +63,7 @@ public class UserStorageImpl implements UserStorage {
             throw new IdNotFoundException("User with ID " + id + " not found");
         }
         String sqlQuery = "select * from USERS where USER_ID = ?";
-        return jdbc.queryForObject(sqlQuery, this::RowMapper, id);
+        return jdbc.queryForObject(sqlQuery, this::rowMapper, id);
     }
 
     @Override
@@ -83,28 +81,7 @@ public class UserStorageImpl implements UserStorage {
         jdbc.update(sqlQuery);
     }
 
-    @Override
-    public List<User> getMutualFriends(Integer userId, Integer otherId) {
-        String sql = "SELECT  u.* " +
-                "FROM FRIENDS AS fs " +
-                "JOIN USERS AS u ON fs.FRIEND_ID = u.USER_ID " +
-                "WHERE fs.USER_ID = ? AND fs.FRIEND_ID IN (" +
-                "SELECT FRIEND_ID FROM FRIENDS WHERE user_id = ?)";
-
-        return jdbc.query(sql, this::RowMapper, userId, otherId);
-    }
-
-    @Override
-    public List<User> getAllFriends(Integer userId) {
-        String sql = "SELECT u.USER_ID AS id,u.USER_LOGIN,u.USER_NAME,u.USER_EMAIL,u.USER_BIRTHDAY " +
-                "FROM FRIENDS AS f " +
-                "LEFT JOIN USERS AS u ON u.USER_ID = f.FRIEND_ID " +
-                "WHERE f.USER_ID = ?";
-
-        return jdbc.query(sql, this::RowMapper, userId);
-    }
-
-    private User RowMapper(ResultSet resultSet, int i) throws SQLException {
+    private User rowMapper(ResultSet resultSet, int i) throws SQLException {
         return new User(resultSet.getInt("USER_ID"),
                 resultSet.getString("USER_EMAIL"),
                 resultSet.getString("USER_LOGIN"),

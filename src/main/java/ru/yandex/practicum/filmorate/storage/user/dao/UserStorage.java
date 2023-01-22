@@ -16,8 +16,4 @@ public interface UserStorage {
     void deleteUserById(int id);
 
     void deleteAllUsers();
-
-    List<User> getMutualFriends(Integer userId, Integer otherId);
-
-    List<User> getAllFriends(Integer userId);
 }

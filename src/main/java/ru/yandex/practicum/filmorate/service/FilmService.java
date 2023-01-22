@@ -45,25 +45,18 @@ public class FilmService {
     public List<Film> getPopularFilms(Integer count) {
         List<Film> popularFilms = filmStorage.findPopularFilms(count);
         genreDao.getFilmGenres(popularFilms);
-        for (int i = 0; i < popularFilms.size(); i++) {
-            likesDao.get(i);
-        }
         return popularFilms;
     }
 
     public List<Film> get() {
         List<Film> films = filmStorage.getAll();
         genreDao.getFilmGenres(films);
-        for (int i = 0; i < films.size(); i++) {
-            likesDao.get(i);
-        }
         return films;
     }
 
     public Film findById(int filmId) {
         Film film = filmStorage.getById(filmId);
         genreDao.getFilmGenres(List.of(film));
-        likesDao.get(filmId);
         return film;
     }
 
